@@ -1,0 +1,47 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        //Check for the latest version here: http://plugins.gradle.org/plugin/com.jfrog.artifactory
+        classpath('org.jfrog.buildinfo:build-info-extractor-gradle:4+')
+    }
+}
+
+apply plugin: 'maven-publish'
+apply plugin: org.jfrog.gradle.plugin.artifactory.ArtifactoryPlugin
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allSource
+    classifier 'sources'
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            artifact sourcesJar
+        }
+    }
+}
+
+artifactory {
+    contextUrl = 'https://repo.jinma.online/artifactory/'
+    publish {
+        repository {
+            repoKey = project.version.endsWith('SNAPSHOT') ? 'libs-snapshot-local' : 'libs-release-local'
+            username = project.hasProperty("artifactory_username") ? project.property("artifactory_username") : ''
+            password = project.hasProperty("artifactory_password") ? project.property("artifactory_password") : ''
+            maven = true
+        }
+        defaults {
+            publications('mavenJava')
+        }
+    }
+    resolve {
+        repository {
+            repoKey = 'libs-local'
+            maven = true
+        }
+    }
+}

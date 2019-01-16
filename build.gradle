@@ -1,0 +1,18 @@
+plugins {
+    id 'java'
+}
+
+group 'capital.scalable'
+version '2.0.3'
+
+apply from: "$rootDir/gradle/publishing.gradle"
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
